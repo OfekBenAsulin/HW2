@@ -1,5 +1,7 @@
 package il.ac.tau.cs.software1.bigram;
-
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -79,7 +81,36 @@ public class BigramModel {
      * @post: mBigramCounts = prev(mBigramCounts)
      */
     public String[] buildVocabularyIndex(String fileName) throws IOException { // Question 1
-        // TODO: implement
+        String[] vocabulary = new String[MAX_VOCABULARY_SIZE];
+        File fromFile = new File(fileName);
+        BufferedReader reader = new BufferedReader(new FileReader(fromFile));
+        String line;
+        String[] tokens;
+        int lastIndex = 0;
+        while ((line = reader.readLine()) != null) { // Read each line from the file
+            tokens = line.trim().split("\\s+");
+            for (String token : tokens) { // for each token in the line, normalize it and add it to the vocabulary if it's not already there
+                String normalized = normalizeWord(token);
+                if (findIndex(vocabulary, normalized) == ELEMENT_NOT_FOUND && normalized != null) {
+                    vocabulary[lastIndex++] = normalized;
+                    if (lastIndex >= MAX_VOCABULARY_SIZE) { // If the vocabulary is full, close the reader and return the vocabulary
+                        reader.close();
+                        return vocabulary;
+                    }
+                }
+            }
+        }
+        reader.close();
+        if (lastIndex > 0 && lastIndex < MAX_VOCABULARY_SIZE) { // If the vocabulary is not full, return a copy of the vocabulary with the correct size
+            String[] result = new String[lastIndex];
+            System.arraycopy(vocabulary, 0, result, 0, lastIndex);
+            return result;
+        }
+        else{
+            if (lastIndex == 0) {
+                return new String[0]; // Return an empty array if no words were found
+            }
+        }
         return null;
     }
 
