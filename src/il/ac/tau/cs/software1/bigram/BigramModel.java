@@ -101,7 +101,7 @@ public class BigramModel {
             }
         }
         reader.close();
-        if (lastIndex > 0 && lastIndex < MAX_VOCABULARY_SIZE) { // If the vocabulary is not full, return a copy of the vocabulary with the correct size
+        if (lastIndex > 0 && lastIndex < MAX_VOCABULARY_SIZE) { //If the vocabulary is not full, return a copy of the vocabulary with the correct size
             String[] result = new String[lastIndex];
             System.arraycopy(vocabulary, 0, result, 0, lastIndex);
             return result;
@@ -119,8 +119,25 @@ public class BigramModel {
      * @post: mBigramCounts = prev(mBigramCounts)
      */
     public int[][] buildCountsArray(String fileName, String[] vocabulary) throws IOException { // Question 2
-        // TODO: implement
-        return null;
+        int[][] bigramCounts = new int[vocabulary.length][vocabulary.length];
+        File fromFile = new File(fileName);
+        BufferedReader reader = new BufferedReader(new FileReader(fromFile));
+        String line;
+        String[] tokens;
+        while ((line = reader.readLine()) != null) { // Read each line from the file
+            tokens = line.trim().split("\\s+");
+            for (int i = 0; i < tokens.length - 1; i++) { // for each token in the line, normalize it and update the bigram counts
+                String normalized1 = normalizeWord(tokens[i]);
+                String normalized2 = normalizeWord(tokens[i + 1]);
+                int index1 = findIndex(vocabulary, normalized1);
+                int index2 = findIndex(vocabulary, normalized2);
+                if (index1 != ELEMENT_NOT_FOUND && index2 != ELEMENT_NOT_FOUND) {
+                    bigramCounts[index1][index2]++;
+                }
+            }
+        }
+        reader.close();
+        return bigramCounts;
     }
 
     /*
