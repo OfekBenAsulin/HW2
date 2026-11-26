@@ -168,7 +168,6 @@ public class BigramModel {
                     countsWriter.newLine();
                 }
             }
-
         }
         countsWriter.close();
     }
@@ -211,8 +210,26 @@ public class BigramModel {
      * @post: if sentence is probable, according to the model, $ret = true, else, $ret = false
      */
     public boolean isLegalSentence(String sentence) { // Question 5
-        // TODO: implement
-        return false;
+        String[] tokens = sentence.trim().split("\\s+");
+        if(tokens[0].isEmpty()) {
+            return true;
+        }
+        else if (tokens.length == 1) {
+            return getWordIndex(tokens[0]) != ELEMENT_NOT_FOUND;
+        }
+        for (int i = 0; i < tokens.length - 1; i++) {
+            String word1 = tokens[i];
+            String word2 = tokens[i + 1];
+            int index1 = getWordIndex(word1);
+            int index2 = getWordIndex(word2);
+            if (index1 == ELEMENT_NOT_FOUND || index2 == ELEMENT_NOT_FOUND) {
+                return false;
+            }
+            if (mBigramCounts[index1][index2] == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////////
